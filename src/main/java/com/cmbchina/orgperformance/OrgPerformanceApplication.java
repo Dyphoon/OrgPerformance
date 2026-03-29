@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @MapperScan("com.cmbchina.orgperformance.mapper")
-public class OrgperformanceApplication {
+public class OrgPerformanceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OrgperformanceApplication.class, args);
+        SpringApplication.run(OrgPerformanceApplication.class, args);
     }
 }
