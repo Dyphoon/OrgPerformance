@@ -1,7 +1,7 @@
 -- 数据库初始化脚本
-CREATE DATABASE IF NOT EXISTS termgoal DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS orgperformance DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE termgoal;
+USE orgperformance;
 
 -- 报表文件表
 CREATE TABLE IF NOT EXISTS report_file (

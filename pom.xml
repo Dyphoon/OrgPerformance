@@ -9,9 +9,9 @@
         <relativePath/>
     </parent>
     <groupId>com.cmbchina</groupId>
-    <artifactId>termgoal</artifactId>
+    <artifactId>orgperformance</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>termgoal</name>
+    <name>orgperformance</name>
     <description>Enterprise Excel Report System</description>
 
     <properties>

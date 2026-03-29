@@ -2,7 +2,7 @@
 -- 测试数据脚本：收数人和机构负责人
 -- =====================================================
 
-USE termgoal;
+USE orgperformance;
 
 -- 1. 确保角色存在
 INSERT IGNORE INTO sys_role (id, role_code, role_name, description, created_at) VALUES 
