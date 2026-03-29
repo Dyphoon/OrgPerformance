@@ -29,8 +29,6 @@ public class SystemCreateRequest {
         private String level2Name;
         private Double weight;
         private String unit;
-        private Double annualTarget;
-        private Double progressTarget;
         private Integer rowIndex;
     }
 }

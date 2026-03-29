@@ -23,12 +23,14 @@ public interface MonthlyIndicatorDataMapper {
 
     @Insert("<script>" +
             "INSERT INTO monthly_indicator_data (monitoring_id, indicator_id, institution_id, actual_value, " +
-            "annual_completion_rate, progress_completion_rate, score_100, score_weighted, score_category, " +
-            "score_dimension, total_score, file_key) VALUES " +
+            "annual_target, progress_target, annual_completion_rate, progress_completion_rate, " +
+            "score_100, score_weighted, score_category, score_dimension, total_score, file_key) VALUES " +
             "<foreach collection='list' item='item' separator=','>" +
             "(#{item.monitoringId}, #{item.indicatorId}, #{item.institutionId}, #{item.actualValue}, " +
-            "#{item.annualCompletionRate}, #{item.progressCompletionRate}, #{item.score100}, #{item.scoreWeighted}, " +
-            "#{item.scoreCategory}, #{item.scoreDimension}, #{item.totalScore}, #{item.fileKey})" +
+            "#{item.annualTarget}, #{item.progressTarget}, " +
+            "#{item.annualCompletionRate}, #{item.progressCompletionRate}, " +
+            "#{item.score100}, #{item.scoreWeighted}, #{item.scoreCategory}, #{item.scoreDimension}, " +
+            "#{item.totalScore}, #{item.fileKey})" +
             "</foreach>" +
             "</script>")
     int batchInsert(@Param("list") List<MonthlyIndicatorData> dataList);

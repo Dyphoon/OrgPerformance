@@ -122,10 +122,6 @@ public class AssessmentSystemService {
                 ind.setWeight(dto.getWeight() != null ?
                         java.math.BigDecimal.valueOf(dto.getWeight()) : null);
                 ind.setUnit(dto.getUnit());
-                ind.setAnnualTarget(dto.getAnnualTarget() != null ?
-                        java.math.BigDecimal.valueOf(dto.getAnnualTarget()) : null);
-                ind.setProgressTarget(dto.getProgressTarget() != null ?
-                        java.math.BigDecimal.valueOf(dto.getProgressTarget()) : null);
                 ind.setRowIndex(dto.getRowIndex());
                 indicators.add(ind);
             }

@@ -114,8 +114,6 @@ public class ExcelTemplateParser {
             indicator.setLevel2Name(getCellValueAsString(row.getCell(3)));
             indicator.setWeight(getCellValueAsBigDecimal(row.getCell(4)));
             indicator.setUnit(getCellValueAsString(row.getCell(5)));
-            indicator.setAnnualTarget(getCellValueAsBigDecimal(row.getCell(6)));
-            indicator.setProgressTarget(getCellValueAsBigDecimal(row.getCell(7)));
             indicator.setRowIndex(i);
             indicators.add(indicator);
         }

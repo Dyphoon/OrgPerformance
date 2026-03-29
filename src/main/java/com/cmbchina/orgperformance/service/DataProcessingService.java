@@ -165,6 +165,20 @@ public class DataProcessingService {
                 data.setActualValue(BigDecimal.valueOf(((Number) actualValue).doubleValue()));
             }
 
+            Object annualTarget = indData.get("annualTarget");
+            if (annualTarget instanceof BigDecimal) {
+                data.setAnnualTarget((BigDecimal) annualTarget);
+            } else if (annualTarget instanceof Number) {
+                data.setAnnualTarget(BigDecimal.valueOf(((Number) annualTarget).doubleValue()));
+            }
+
+            Object progressTarget = indData.get("progressTarget");
+            if (progressTarget instanceof BigDecimal) {
+                data.setProgressTarget((BigDecimal) progressTarget);
+            } else if (progressTarget instanceof Number) {
+                data.setProgressTarget(BigDecimal.valueOf(((Number) progressTarget).doubleValue()));
+            }
+
             Object annualRate = indData.get("annualCompletionRate");
             if (annualRate instanceof BigDecimal) {
                 data.setAnnualCompletionRate((BigDecimal) annualRate);
@@ -342,8 +356,6 @@ public class DataProcessingService {
                 vo.setLevel1Name(indicator.getLevel1Name());
                 vo.setLevel2Name(indicator.getLevel2Name());
                 vo.setUnit(indicator.getUnit());
-                vo.setAnnualTarget(indicator.getAnnualTarget());
-                vo.setProgressTarget(indicator.getProgressTarget());
             }
 
             Institution institution = institutionMapper.selectById(task.getInstitutionId());
@@ -445,9 +457,11 @@ public class DataProcessingService {
             }
             data.setActualValue(actualValue);
 
-            // Set scores from template data
+            // Set scores and targets from template data
             if (i < templateIndicators.size()) {
                 Map<String, Object> tmplInd = templateIndicators.get(i);
+                data.setAnnualTarget(getBigDecimal(tmplInd.get("annualTarget")));
+                data.setProgressTarget(getBigDecimal(tmplInd.get("progressTarget")));
                 data.setAnnualCompletionRate(getBigDecimal(tmplInd.get("annualCompletionRate")));
                 data.setProgressCompletionRate(getBigDecimal(tmplInd.get("progressCompletionRate")));
                 data.setScore100(getBigDecimal(tmplInd.get("score100")));

@@ -14,8 +14,6 @@ public class Indicator {
     private String level2Name;
     private BigDecimal weight;
     private String unit;
-    private BigDecimal annualTarget;
-    private BigDecimal progressTarget;
     private Integer rowIndex;
     private LocalDateTime createdAt;
 }

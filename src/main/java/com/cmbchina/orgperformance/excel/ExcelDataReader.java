@@ -137,7 +137,17 @@ public class ExcelDataReader {
             if (sheet == null) return result;
 
             List<Map<String, Object>> indicators = new ArrayList<>();
-            for (int i = 3; i <= sheet.getLastRowNum(); i++) {
+            // Template sheet: dynamically find header row (contains "维度")
+            int dataStartRow = 3; // default fallback
+            for (int i = 0; i <= 5 && i <= sheet.getLastRowNum(); i++) {
+                Row headerRow = sheet.getRow(i);
+                if (headerRow != null && "维度".equals(getCellStringValue(headerRow.getCell(0)))) {
+                    dataStartRow = i + 1;
+                    break;
+                }
+            }
+
+            for (int i = dataStartRow; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 

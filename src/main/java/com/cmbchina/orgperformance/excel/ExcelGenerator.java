@@ -218,6 +218,15 @@ public class ExcelGenerator {
         }
     }
 
+    private BigDecimal getNumericValue(Cell cell) {
+        if (cell == null) return null;
+        try {
+            return BigDecimal.valueOf(cell.getNumericCellValue());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private void copyCellValue(Cell target, Cell source) {
         if (source == null) return;
         switch (source.getCellType()) {
@@ -318,9 +327,19 @@ public class ExcelGenerator {
         // First pass: calculate scores for each indicator
         List<Map<String, Object>> calculatedScores = new ArrayList<>();
 
-        // Template sheet: row 0 = empty, row 1 = headers, row 2 = column headers (一级指标, 二级指标...), row 3+ = data
-        // Start from row 4 (index 4) to skip headers and match readTemplateData which reads data from row 4
-        for (int rowNum = 4; rowNum <= templateSheet.getLastRowNum(); rowNum++) {
+        // Template sheet: dynamically find header row (contains "维度")
+        // Then data starts from the next row
+        int dataStartRow = -1;
+        for (int i = 0; i <= 5 && i <= templateSheet.getLastRowNum(); i++) {
+            Row headerRow = templateSheet.getRow(i);
+            if (headerRow != null && "维度".equals(getCellStringValue(headerRow.getCell(0)))) {
+                dataStartRow = i + 1;
+                break;
+            }
+        }
+        if (dataStartRow < 0) dataStartRow = 3; // fallback
+
+        for (int rowNum = dataStartRow; rowNum <= templateSheet.getLastRowNum(); rowNum++) {
             Row row = templateSheet.getRow(rowNum);
             if (row == null) continue;
 
@@ -369,11 +388,24 @@ public class ExcelGenerator {
             }
 
             // Calculate and set scores
-            BigDecimal progressTarget = indicator.getProgressTarget();
-            BigDecimal annualTarget = indicator.getAnnualTarget();
+            // Read targets from template columns 6 and 7 (F and G)
+            BigDecimal progressTarget = getNumericValue(row.getCell(7));
+            BigDecimal annualTarget = getNumericValue(row.getCell(6));
             BigDecimal weight = indicator.getWeight();
             String category = indicator.getCategory();
             String dimension = indicator.getDimension();
+
+            // Write targets to cells if they exist (columns F and G, indices 6 and 7)
+            if (annualTarget != null) {
+                Cell targetCell = row.getCell(6);
+                if (targetCell == null) targetCell = row.createCell(6);
+                targetCell.setCellValue(annualTarget.doubleValue());
+            }
+            if (progressTarget != null) {
+                Cell progressTargetCell = row.getCell(7);
+                if (progressTargetCell == null) progressTargetCell = row.createCell(7);
+                progressTargetCell.setCellValue(progressTarget.doubleValue());
+            }
 
             // Use progressTarget if available and non-zero, otherwise fall back to annualTarget
             BigDecimal targetForScore = progressTarget != null && progressTarget.compareTo(BigDecimal.ZERO) != 0

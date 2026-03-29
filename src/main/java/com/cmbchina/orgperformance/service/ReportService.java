@@ -180,8 +180,8 @@ public class ReportService {
             item.put("level2Name", ind.getLevel2Name());
             item.put("unit", ind.getUnit());
             item.put("actualValue", data.getActualValue());
-            item.put("target", ind.getAnnualTarget());
-            item.put("progressTarget", ind.getProgressTarget());
+            item.put("target", data.getAnnualTarget());
+            item.put("progressTarget", data.getProgressTarget());
             item.put("completionRate", data.getProgressCompletionRate());
             item.put("score", data.getScore100());
             item.put("weight", ind.getWeight());

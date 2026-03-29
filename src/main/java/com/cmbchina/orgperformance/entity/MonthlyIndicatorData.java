@@ -11,6 +11,8 @@ public class MonthlyIndicatorData {
     private Long indicatorId;
     private Long institutionId;
     private BigDecimal actualValue;
+    private BigDecimal annualTarget;
+    private BigDecimal progressTarget;
     private BigDecimal annualCompletionRate;
     private BigDecimal progressCompletionRate;
     private BigDecimal score100;
