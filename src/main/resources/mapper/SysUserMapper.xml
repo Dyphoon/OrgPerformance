@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.SysUserMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.SysUser">
+        SELECT * FROM sys_user WHERE id = #{id}
+    </select>
+
+    <select id="selectByUsername" resultType="com.cmbchina.orgperformance.entity.SysUser">
+        SELECT * FROM sys_user WHERE username = #{username}
+    </select>
+
+    <select id="selectByEmpNo" resultType="com.cmbchina.orgperformance.entity.SysUser">
+        SELECT * FROM sys_user WHERE emp_no = #{empNo}
+    </select>
+
+    <select id="selectAllActive" resultType="com.cmbchina.orgperformance.entity.SysUser">
+        SELECT * FROM sys_user WHERE status = 1
+    </select>
+
+    <select id="selectList" resultType="com.cmbchina.orgperformance.entity.SysUser">
+        SELECT * FROM sys_user WHERE 1=1
+        <if test="name != null"> AND name LIKE CONCAT('%', #{name}, '%')</if>
+        <if test="empNo != null"> AND emp_no = #{empNo}</if>
+    </select>
+
+    <select id="selectRoleIdsByUserId" resultType="long">
+        SELECT role_id FROM sys_user_role WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectByRoleCode" resultType="com.cmbchina.orgperformance.entity.SysUser">
+        SELECT u.* FROM sys_user u
+        INNER JOIN sys_user_role ur ON u.id = ur.user_id
+        INNER JOIN sys_role r ON ur.role_id = r.id
+        WHERE r.role_code = #{roleCode} AND u.status = 1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.cmbchina.orgperformance.entity.SysUser">
+        INSERT INTO sys_user (username, password, name, emp_no, email, phone, status)
+        VALUES (#{username}, #{password}, #{name}, #{empNo}, #{email}, #{phone}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.cmbchina.orgperformance.entity.SysUser">
+        UPDATE sys_user SET name=#{name}, email=#{email}, phone=#{phone}, status=#{status} WHERE id=#{id}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE sys_user SET password=#{password} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM sys_user WHERE id = #{id}
+    </delete>
+
+    <insert id="insertUserRoles">
+        INSERT INTO sys_user_role (user_id, role_id) VALUES
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{userId}, #{roleId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteUserRoles">
+        DELETE FROM sys_user_role WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

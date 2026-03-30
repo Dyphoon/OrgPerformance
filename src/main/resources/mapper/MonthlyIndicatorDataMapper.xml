@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.MonthlyIndicatorDataMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.MonthlyIndicatorData">
+        SELECT * FROM monthly_indicator_data WHERE id = #{id}
+    </select>
+
+    <select id="selectByMonitoringId" resultType="com.cmbchina.orgperformance.entity.MonthlyIndicatorData">
+        SELECT * FROM monthly_indicator_data WHERE monitoring_id = #{monitoringId}
+    </select>
+
+    <select id="selectByMonitoringIdAndInstitutionId" resultType="com.cmbchina.orgperformance.entity.MonthlyIndicatorData">
+        SELECT * FROM monthly_indicator_data WHERE monitoring_id = #{monitoringId} AND institution_id = #{institutionId}
+    </select>
+
+    <select id="selectByMonitoringIdAndIndicatorId" resultType="com.cmbchina.orgperformance.entity.MonthlyIndicatorData">
+        SELECT * FROM monthly_indicator_data WHERE monitoring_id = #{monitoringId} AND indicator_id = #{indicatorId}
+    </select>
+
+    <select id="selectDetailByInstitution" resultType="com.cmbchina.orgperformance.entity.MonthlyIndicatorData">
+        SELECT * FROM monthly_indicator_data mid
+        JOIN indicator i ON mid.indicator_id = i.id
+        WHERE mid.monitoring_id = #{monitoringId} AND mid.institution_id = #{institutionId}
+        ORDER BY i.dimension, i.category, i.row_index
+    </select>
+
+    <select id="selectFileKeyByMonitoringAndInstitution" resultType="string">
+        SELECT file_key FROM monthly_indicator_data WHERE monitoring_id = #{monitoringId} AND institution_id = #{institutionId} LIMIT 1
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO monthly_indicator_data (monitoring_id, indicator_id, institution_id, actual_value,
+        annual_target, progress_target, annual_completion_rate, progress_completion_rate,
+        score_100, score_weighted, score_category, score_dimension, total_score, file_key) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.monitoringId}, #{item.indicatorId}, #{item.institutionId}, #{item.actualValue},
+            #{item.annualTarget}, #{item.progressTarget},
+            #{item.annualCompletionRate}, #{item.progressCompletionRate},
+            #{item.score100}, #{item.scoreWeighted}, #{item.scoreCategory}, #{item.scoreDimension},
+            #{item.totalScore}, #{item.fileKey})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByMonitoringId">
+        DELETE FROM monthly_indicator_data WHERE monitoring_id = #{monitoringId}
+    </delete>
+
+    <delete id="deleteByMonitoringIdAndInstitutionId">
+        DELETE FROM monthly_indicator_data WHERE monitoring_id = #{monitoringId} AND institution_id = #{institutionId}
+    </delete>
+
+</mapper>

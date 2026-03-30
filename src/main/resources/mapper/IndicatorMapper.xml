@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.IndicatorMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.Indicator">
+        SELECT * FROM indicator WHERE id = #{id}
+    </select>
+
+    <select id="selectBySystemId" resultType="com.cmbchina.orgperformance.entity.Indicator">
+        SELECT * FROM indicator WHERE system_id = #{systemId} ORDER BY row_index
+    </select>
+
+    <select id="selectBySystemIdAndDimension" resultType="com.cmbchina.orgperformance.entity.Indicator">
+        SELECT * FROM indicator WHERE system_id = #{systemId} AND dimension = #{dimension} ORDER BY row_index
+    </select>
+
+    <select id="selectDimensionsBySystemId" resultType="string">
+        SELECT DISTINCT dimension FROM indicator WHERE system_id = #{systemId}
+    </select>
+
+    <select id="selectCategoriesByDimension" resultType="string">
+        SELECT DISTINCT category FROM indicator WHERE system_id = #{systemId} AND dimension = #{dimension}
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO indicator (system_id, dimension, category, level1_name, level2_name, weight, unit, row_index) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.systemId}, #{item.dimension}, #{item.category}, #{item.level1Name}, #{item.level2Name},
+            #{item.weight}, #{item.unit}, #{item.rowIndex})
+        </foreach>
+    </insert>
+
+    <delete id="deleteBySystemId">
+        DELETE FROM indicator WHERE system_id = #{systemId}
+    </delete>
+
+</mapper>

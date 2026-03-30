@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.AssessmentSystemMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.AssessmentSystem">
+        SELECT * FROM assessment_system WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="com.cmbchina.orgperformance.entity.AssessmentSystem">
+        SELECT * FROM assessment_system WHERE status = 1 ORDER BY created_at DESC
+    </select>
+
+    <select id="selectList" resultType="com.cmbchina.orgperformance.entity.AssessmentSystem">
+        SELECT * FROM assessment_system WHERE 1=1
+        <if test="name != null"> AND name LIKE CONCAT('%', #{name}, '%')</if>
+        <if test="status != null"> AND status = #{status}</if>
+        ORDER BY created_at DESC
+        <if test="offset != null"> LIMIT #{offset}, #{limit}</if>
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM assessment_system WHERE 1=1
+        <if test="name != null"> AND name LIKE CONCAT('%', #{name}, '%')</if>
+        <if test="status != null"> AND status = #{status}</if>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.cmbchina.orgperformance.entity.AssessmentSystem">
+        INSERT INTO assessment_system (name, description, template_file_key, need_approval, status, created_by)
+        VALUES (#{name}, #{description}, #{templateFileKey}, #{needApproval}, #{status}, #{createdBy})
+    </insert>
+
+    <update id="update" parameterType="com.cmbchina.orgperformance.entity.AssessmentSystem">
+        UPDATE assessment_system SET name=#{name}, description=#{description},
+        need_approval=#{needApproval}, status=#{status} WHERE id=#{id}
+    </update>
+
+    <update id="updateTemplateFileKey">
+        UPDATE assessment_system SET template_file_key=#{templateFileKey} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM assessment_system WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.CollectionTaskMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.CollectionTask">
+        SELECT * FROM collection_task WHERE id = #{id}
+    </select>
+
+    <select id="selectByMonitoringId" resultType="com.cmbchina.orgperformance.entity.CollectionTask">
+        SELECT * FROM collection_task WHERE monitoring_id = #{monitoringId}
+    </select>
+
+    <select id="selectByMonitoringIdAndCollectorUserId" resultType="com.cmbchina.orgperformance.entity.CollectionTask">
+        SELECT * FROM collection_task WHERE monitoring_id = #{monitoringId} AND collector_user_id = #{collectorUserId}
+    </select>
+
+    <select id="selectByMonitoringIdAndInstitutionId" resultType="com.cmbchina.orgperformance.entity.CollectionTask">
+        SELECT * FROM collection_task WHERE monitoring_id = #{monitoringId} AND institution_id = #{institutionId}
+    </select>
+
+    <select id="selectByMonitoringIdAndStatus" resultType="com.cmbchina.orgperformance.entity.CollectionTask">
+        SELECT * FROM collection_task WHERE monitoring_id = #{monitoringId} AND status = #{status}
+    </select>
+
+    <select id="countByMonitoringId" resultType="int">
+        SELECT COUNT(*) FROM collection_task WHERE monitoring_id = #{monitoringId}
+    </select>
+
+    <select id="countByMonitoringIdAndStatus" resultType="int">
+        SELECT COUNT(*) FROM collection_task WHERE monitoring_id = #{monitoringId} AND status = #{status}
+    </select>
+
+    <select id="selectDistinctCollectors" resultType="string">
+        SELECT DISTINCT collector_emp_no FROM collection_task WHERE monitoring_id = #{monitoringId}
+    </select>
+
+    <select id="selectByMonitoringCollectorAndInstitution" resultType="com.cmbchina.orgperformance.entity.CollectionTask">
+        SELECT * FROM collection_task WHERE monitoring_id = #{monitoringId}
+        AND collector_user_id = #{collectorUserId} AND institution_id = #{institutionId} LIMIT 1
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO collection_task (monitoring_id, indicator_id, institution_id, collector_name,
+        collector_emp_no, collector_user_id, status, file_key,
+        collection_indicator_name, collection_unit, collection_dimension, collection_category) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.monitoringId}, #{item.indicatorId}, #{item.institutionId}, #{item.collectorName},
+            #{item.collectorEmpNo}, #{item.collectorUserId}, #{item.status}, #{item.fileKey},
+            #{item.collectionIndicatorName}, #{item.collectionUnit}, #{item.collectionDimension}, #{item.collectionCategory})
+        </foreach>
+    </insert>
+
+    <update id="submitTask">
+        UPDATE collection_task SET actual_value=#{actualValue}, status=#{status}, submitted_at=NOW() WHERE id=#{id}
+    </update>
+
+    <update id="approveTask">
+        UPDATE collection_task SET status=#{status}, approved_by=#{approvedBy}, approved_at=NOW() WHERE id=#{id}
+    </update>
+
+    <update id="rejectTask">
+        UPDATE collection_task SET status=#{status}, remark=#{remark}, approved_by=#{approvedBy}, approved_at=NOW() WHERE id=#{id}
+    </update>
+
+    <delete id="deleteByMonitoringId">
+        DELETE FROM collection_task WHERE monitoring_id = #{monitoringId}
+    </delete>
+
+    <update id="updateCollectorByInstitutionId">
+        UPDATE collection_task SET collector_name=#{collectorName}, collector_emp_no=#{collectorEmpNo},
+        collector_user_id=#{collectorUserId} WHERE monitoring_id=#{monitoringId} AND institution_id=#{institutionId}
+        AND (collector_user_id IS NULL OR collector_user_id = 0)
+    </update>
+
+    <update id="updateFileKeyByCollector">
+        UPDATE collection_task SET file_key=#{fileKey} WHERE monitoring_id=#{monitoringId} AND collector_user_id=#{collectorUserId}
+    </update>
+
+</mapper>

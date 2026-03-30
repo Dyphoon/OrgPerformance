@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.SysConfigMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.SysConfig">
+        SELECT * FROM sys_config WHERE id = #{id}
+    </select>
+
+    <select id="selectByKey" resultType="com.cmbchina.orgperformance.entity.SysConfig">
+        SELECT * FROM sys_config WHERE config_key = #{configKey}
+    </select>
+
+    <select id="selectAll" resultType="com.cmbchina.orgperformance.entity.SysConfig">
+        SELECT * FROM sys_config ORDER BY id
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.cmbchina.orgperformance.entity.SysConfig">
+        INSERT INTO sys_config (config_key, config_value, description)
+        VALUES (#{configKey}, #{configValue}, #{description})
+    </insert>
+
+    <update id="update" parameterType="com.cmbchina.orgperformance.entity.SysConfig">
+        UPDATE sys_config SET config_value=#{configValue}, description=#{description} WHERE config_key=#{configKey}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM sys_config WHERE id = #{id}
+    </delete>
+
+</mapper>

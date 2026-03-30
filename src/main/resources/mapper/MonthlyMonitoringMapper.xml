@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.MonthlyMonitoringMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.MonthlyMonitoring">
+        SELECT * FROM monthly_monitoring WHERE id = #{id}
+    </select>
+
+    <select id="selectBySystemId" resultType="com.cmbchina.orgperformance.entity.MonthlyMonitoring">
+        SELECT * FROM monthly_monitoring WHERE system_id = #{systemId} ORDER BY year DESC, month DESC
+    </select>
+
+    <select id="selectBySystemIdAndYearMonth" resultType="com.cmbchina.orgperformance.entity.MonthlyMonitoring">
+        SELECT * FROM monthly_monitoring WHERE system_id = #{systemId} AND year = #{year} AND month = #{month}
+    </select>
+
+    <select id="selectList" resultType="com.cmbchina.orgperformance.entity.MonthlyMonitoring">
+        SELECT * FROM monthly_monitoring WHERE 1=1
+        <if test="systemId != null"> AND system_id = #{systemId}</if>
+        <if test="status != null"> AND status = #{status}</if>
+        <if test="year != null"> AND year = #{year}</if>
+        <if test="month != null"> AND month = #{month}</if>
+        ORDER BY created_at DESC
+        <if test="offset != null"> LIMIT #{offset}, #{limit}</if>
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM monthly_monitoring WHERE 1=1
+        <if test="systemId != null"> AND system_id = #{systemId}</if>
+        <if test="status != null"> AND status = #{status}</if>
+    </select>
+
+    <select id="selectByStatusAndProcessStatus" resultType="com.cmbchina.orgperformance.entity.MonthlyMonitoring">
+        SELECT * FROM monthly_monitoring WHERE status = #{status} AND process_status = #{processStatus}
+    </select>
+
+    <select id="selectAll" resultType="com.cmbchina.orgperformance.entity.MonthlyMonitoring">
+        SELECT * FROM monthly_monitoring ORDER BY created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.cmbchina.orgperformance.entity.MonthlyMonitoring">
+        INSERT INTO monthly_monitoring (system_id, year, month, status, deadline, approval_required, created_by)
+        VALUES (#{systemId}, #{year}, #{month}, #{status}, #{deadline}, #{approvalRequired}, #{createdBy})
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE monthly_monitoring SET status=#{status}, updated_at=NOW() WHERE id=#{id}
+    </update>
+
+    <update id="updateProcessStatus">
+        UPDATE monthly_monitoring SET process_status=#{processStatus}, process_percent=#{processPercent},
+        process_msg=#{processMsg}, updated_at=NOW() WHERE id=#{id}
+    </update>
+
+    <update id="updateDeadline">
+        UPDATE monthly_monitoring SET deadline=#{deadline} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM monthly_monitoring WHERE id = #{id}
+    </delete>
+
+</mapper>
