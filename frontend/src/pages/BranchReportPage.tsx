@@ -123,7 +123,7 @@ export default function BranchReportPage() {
         series: [{
           type: 'bar',
           data: reportData.indicators?.map((i: any) => ({ 
-            value: i.completionRate ? (i.completionRate * 100).toFixed(1) : 0 
+            value: i.progressCompletionRate ? (i.progressCompletionRate * 100).toFixed(1) : 0 
           })) || [],
           itemStyle: { color: '#1890ff' },
           label: { show: true, position: 'top', formatter: '{c}%' },

@@ -182,7 +182,7 @@ public class ReportService {
             item.put("actualValue", data.getActualValue());
             item.put("target", data.getAnnualTarget());
             item.put("progressTarget", data.getProgressTarget());
-            item.put("completionRate", data.getProgressCompletionRate());
+            item.put("progressCompletionRate", data.getProgressCompletionRate());
             item.put("score", data.getScore100());
             item.put("weight", ind.getWeight());
             item.put("weightedScore", data.getScoreWeighted());
