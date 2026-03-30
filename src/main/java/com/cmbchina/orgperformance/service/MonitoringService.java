@@ -523,6 +523,7 @@ public class MonitoringService {
             SysUser user = userMapper.selectById(record.getUserId());
             if (user != null) {
                 vo.setLeaderName(user.getName());
+                vo.setLeaderEmpNo(user.getEmpNo());
             }
 
             result.add(vo);

@@ -10,6 +10,7 @@ public class ConfirmationTaskVO {
     private String institutionName;
     private Long userId;
     private String leaderName;
+    private String leaderEmpNo;
     private String status;
     private String remark;
     private String confirmedAt;

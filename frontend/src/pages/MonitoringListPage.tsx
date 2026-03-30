@@ -312,6 +312,7 @@ export default function MonitoringListPage() {
   const confirmationTaskColumns = [
     { title: '机构', dataIndex: 'institutionName', key: 'institutionName' },
     { title: '负责人', dataIndex: 'leaderName', key: 'leaderName' },
+    { title: '工号', dataIndex: 'leaderEmpNo', key: 'leaderEmpNo' },
     { title: '状态', dataIndex: 'status', key: 'status',
       render: (s: string) => <Tag color={s === 'confirmed' ? 'success' : 'warning'}>{s === 'confirmed' ? '已确认' : '待确认'}</Tag>
     },
