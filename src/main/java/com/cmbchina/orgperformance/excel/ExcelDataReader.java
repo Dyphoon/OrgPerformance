@@ -34,14 +34,14 @@ public class ExcelDataReader {
                 data.setMonitoringId(monitoringId);
                 data.setInstitutionId(institutionId);
                 data.setIndicatorId(indicatorId);
-                data.setActualValue(getNumericValue(row.getCell(8)));
-                data.setAnnualCompletionRate(getNumericValue(row.getCell(9)));
-                data.setProgressCompletionRate(getNumericValue(row.getCell(10)));
-                data.setScore100(getNumericValue(row.getCell(11)));
-                data.setScoreWeighted(getNumericValue(row.getCell(12)));
-                data.setScoreCategory(getNumericValue(row.getCell(13)));
-                data.setScoreDimension(getNumericValue(row.getCell(14)));
-                data.setTotalScore(getNumericValue(row.getCell(15)));
+                data.setActualValue(getNumericCellValue(row.getCell(8)));
+                data.setAnnualCompletionRate(getNumericCellValue(row.getCell(9)));
+                data.setProgressCompletionRate(getNumericCellValue(row.getCell(10)));
+                data.setScore100(getNumericCellValue(row.getCell(11)));
+                data.setScoreWeighted(getNumericCellValue(row.getCell(12)));
+                data.setScoreCategory(getNumericCellValue(row.getCell(13)));
+                data.setScoreDimension(getNumericCellValue(row.getCell(14)));
+                data.setTotalScore(getNumericCellValue(row.getCell(15)));
                 data.setFileKey(fileKey);
 
                 dataList.add(data);
@@ -153,27 +153,27 @@ public class ExcelDataReader {
 
                 String level1 = getCellStringValue(row.getCell(2));
                 String level2 = getCellStringValue(row.getCell(3));
-                BigDecimal actualVal = getNumericValue(row.getCell(8));
-                BigDecimal annualComp = getNumericValue(row.getCell(9));
-                BigDecimal score = getNumericValue(row.getCell(11));
+                BigDecimal actualVal = getNumericCellValue(row.getCell(8));
+                BigDecimal annualComp = getNumericCellValue(row.getCell(9));
+                BigDecimal score = getNumericCellValue(row.getCell(11));
 
                 Map<String, Object> indicator = new HashMap<>();
                 indicator.put("dimension", getCellStringValue(row.getCell(0)));
                 indicator.put("category", getCellStringValue(row.getCell(1)));
                 indicator.put("level1Name", level1);
                 indicator.put("level2Name", level2);
-                indicator.put("weight", getNumericValue(row.getCell(4)));
+                indicator.put("weight", getNumericCellValue(row.getCell(4)));
                 indicator.put("unit", getCellStringValue(row.getCell(5)));
-                indicator.put("annualTarget", getNumericValue(row.getCell(6)));
-                indicator.put("progressTarget", getNumericValue(row.getCell(7)));
+                indicator.put("annualTarget", getNumericCellValue(row.getCell(6)));
+                indicator.put("progressTarget", getNumericCellValue(row.getCell(7)));
                 indicator.put("actualValue", actualVal);
                 indicator.put("annualCompletionRate", annualComp);
-                indicator.put("progressCompletionRate", getNumericValue(row.getCell(10)));
+                indicator.put("progressCompletionRate", getNumericCellValue(row.getCell(10)));
                 indicator.put("score100", score);
-                indicator.put("scoreWeighted", getNumericValue(row.getCell(12)));
-                indicator.put("scoreCategory", getNumericValue(row.getCell(13)));
-                indicator.put("scoreDimension", getNumericValue(row.getCell(14)));
-                indicator.put("totalScore", getNumericValue(row.getCell(15)));
+                indicator.put("scoreWeighted", getNumericCellValue(row.getCell(12)));
+                indicator.put("scoreCategory", getNumericCellValue(row.getCell(13)));
+                indicator.put("scoreDimension", getNumericCellValue(row.getCell(14)));
+                indicator.put("totalScore", getNumericCellValue(row.getCell(15)));
                 indicators.add(indicator);
             }
             result.put("indicators", indicators);
@@ -181,15 +181,7 @@ public class ExcelDataReader {
 
         return result;
     }
-
-    private BigDecimal getNumericValue(Cell cell) {
-        if (cell == null) return null;
-        try {
-            return BigDecimal.valueOf(cell.getNumericCellValue());
-        } catch (Exception e) {
-            return null;
-        }
-    }
+    
 
     private BigDecimal getNumericCellValue(Cell cell) {
         if (cell == null) return null;

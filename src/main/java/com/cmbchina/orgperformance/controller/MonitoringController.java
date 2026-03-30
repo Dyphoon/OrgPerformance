@@ -208,6 +208,13 @@ public class MonitoringController {
         return ApiResponse.success("已回退到收数中状态");
     }
 
+    @PostMapping("/{id}/rollback-to-confirming")
+    @PreAuthorize("hasRole('1')")
+    public ApiResponse<String> rollbackToConfirming(@PathVariable Long id) {
+        monitoringService.rollbackToConfirming(id);
+        return ApiResponse.success("已回退到确认中状态");
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('1')")
     public ApiResponse<String> deleteMonitoring(@PathVariable Long id) throws IOException {

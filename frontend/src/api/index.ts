@@ -138,6 +138,8 @@ export const api = {
       request<void>(`/monitorings/${monitoringId}/regenerate-confirmation-tasks`, { method: 'POST' }),
     rollback: (monitoringId: number) =>
       request<void>(`/monitorings/${monitoringId}/rollback`, { method: 'POST' }),
+    rollbackToConfirming: (monitoringId: number) =>
+      request<void>(`/monitorings/${monitoringId}/rollback-to-confirming`, { method: 'POST' }),
     delete: (monitoringId: number) =>
       request<void>(`/monitorings/${monitoringId}`, { method: 'DELETE' }),
   },

@@ -575,6 +575,20 @@ public class MonitoringService {
     }
 
     @Transactional
+    public void rollbackToConfirming(Long monitoringId) {
+        MonthlyMonitoring monitoring = monitoringMapper.selectById(monitoringId);
+        if (monitoring == null) {
+            throw new RuntimeException("监测不存在");
+        }
+        if (!MonthlyMonitoring.STATUS_PUBLISHED.equals(monitoring.getStatus())) {
+            throw new RuntimeException("当前状态不允许回退到确认中");
+        }
+        
+        // 将监测状态回退到确认中
+        monitoringMapper.updateStatus(monitoringId, MonthlyMonitoring.STATUS_CONFIRMING);
+    }
+
+    @Transactional
     public void deleteMonitoring(Long monitoringId) throws IOException {
         MonthlyMonitoring monitoring = monitoringMapper.selectById(monitoringId);
         if (monitoring == null) {

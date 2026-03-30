@@ -102,6 +102,17 @@ export default function MonitoringListPage() {
     }
   };
 
+  const handleRollbackToConfirming = async (id: number) => {
+    try {
+      await api.monitorings.rollbackToConfirming(id);
+      message.success('已回退到确认中状态');
+      setDetailVisible(false);
+      fetchData();
+    } catch (error: any) {
+      message.error(error.message || '回退失败');
+    }
+  };
+
   const handleDelete = (record: Monitoring) => {
     Modal.confirm({
       title: '确认删除',
@@ -266,6 +277,9 @@ export default function MonitoringListPage() {
       render: (_: any, record: Monitoring) => (
         <Space>
           <Button type="link" onClick={() => openDetail(record)}>详情</Button>
+          {record.status === 'PUBLISHED' && (
+            <Button type="link" danger onClick={() => handleRollbackToConfirming(record.id)}>回退</Button>
+          )}
           <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>删除</Button>
         </Space>
       ),
@@ -438,7 +452,7 @@ export default function MonitoringListPage() {
                 <div style={{ marginTop: 16, textAlign: 'center' }}>
                   <Space>
                     <Button danger onClick={() => handleRollback(currentMonitoring.id)}>
-                      回退
+                      回退到收数
                     </Button>
                     <Button type="primary" onClick={() => handlePublish(currentMonitoring.id)}>
                       发布
