@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openclaw>
+    <mcp_servers>
+        <server>
+            <name>orgperformance</name>
+            <transport>sse</transport>
+            <url>http://localhost:8080/sse</url>
+            <message_url>http://localhost:8080/mcp/message</message_url>
+            <headers>
+                <header>
+                    <name>Content-Type</name>
+                    <value>application/json</value>
+                </header>
+            </headers>
+            <!--
+            Optional authentication:
+            <auth>
+                <type>bearer</type>
+                <token>your-jwt-token-here</token>
+            </auth>
+            -->
+        </server>
+    </mcp_servers>
+
+    <tool_categories>
+        <category>
+            <name>system</name>
+            <display_name>评估体系管理</display_name>
+            <description>创建和管理绩效评估体系</description>
+            <tools>
+                <tool>list_systems</tool>
+                <tool>get_system</tool>
+                <tool>create_system</tool>
+                <tool>validate_template</tool>
+                <tool>get_system_institutions</tool>
+                <tool>get_system_indicators</tool>
+            </tools>
+        </category>
+
+        <category>
+            <name>monitoring</name>
+            <display_name>监测流程</display_name>
+            <description>管理绩效数据监测流程</description>
+            <tools>
+                <tool>list_monitorings</tool>
+                <tool>get_monitoring</tool>
+                <tool>create_monitoring</tool>
+                <tool>start_monitoring</tool>
+                <tool>close_monitoring</tool>
+                <tool>start_confirming</tool>
+                <tool>publish_monitoring</tool>
+                <tool>rollback_monitoring</tool>
+            </tools>
+        </category>
+
+        <category>
+            <name>data_collection</name>
+            <display_name>数据采集</display_name>
+            <description>采集和提交绩效数据</description>
+            <tools>
+                <tool>list_tasks</tool>
+                <tool>submit_task</tool>
+                <tool>batch_submit_tasks</tool>
+                <tool>confirm_institution</tool>
+            </tools>
+        </category>
+
+        <category>
+            <name>report</name>
+            <display_name>绩效报告</display_name>
+            <description>查看绩效数据和生成报告</description>
+            <tools>
+                <tool>get_overview</tool>
+                <tool>get_institution_report</tool>
+                <tool>generate_reports</tool>
+                <tool>get_performance_data</tool>
+                <tool>get_visualization_data</tool>
+            </tools>
+        </category>
+
+        <category>
+            <name>notification</name>
+            <display_name>消息通知</display_name>
+            <description>管理通知消息</description>
+            <tools>
+                <tool>list_notifications</tool>
+                <tool>get_unread_count</tool>
+                <tool>mark_notification_read</tool>
+            </tools>
+        </category>
+    </tool_categories>
+</openclaw>

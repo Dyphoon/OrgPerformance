@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Modal, Tabs, Table, Descriptions, Spin, message, Button, Space } from 'antd';
-import * as XLSX from 'xlsx';
+import { Modal, Tabs, Table, Descriptions, Spin, message } from 'antd';
 import { api } from '../api';
-import { DownloadOutlined, FileExcelOutlined } from '@ant-design/icons';
 
 interface SystemPreviewModalProps {
   systemId: number | null;
@@ -10,19 +8,11 @@ interface SystemPreviewModalProps {
   onClose: () => void;
 }
 
-interface SheetData {
-  name: string;
-  headers: string[];
-  rows: any[][];
-}
-
 export default function SystemPreviewModal({ systemId, visible, onClose }: SystemPreviewModalProps) {
   const [loading, setLoading] = useState(false);
   const [systemInfo, setSystemInfo] = useState<any>(null);
   const [institutions, setInstitutions] = useState<any[]>([]);
   const [indicators, setIndicators] = useState<any[]>([]);
-  const [sheetData, setSheetData] = useState<SheetData[]>([]);
-  const [excelUrl, setExcelUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible && systemId) {
@@ -42,79 +32,11 @@ export default function SystemPreviewModal({ systemId, visible, onClose }: Syste
       setSystemInfo(sysRes);
       setInstitutions(instRes);
       setIndicators(indRes);
-
-      // 获取并解析Excel模板
-      try {
-        const url = await api.systems.getTemplateUrl(systemId);
-        setExcelUrl(url);
-        
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const arrayBuffer = await blob.arrayBuffer();
-        const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
-        
-        const sheets: SheetData[] = [];
-        workbook.SheetNames.forEach(sheetName => {
-          const sheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
-          if (jsonData.length > 0) {
-            sheets.push({
-              name: sheetName,
-              headers: jsonData[0] || [],
-              rows: jsonData.slice(1),
-            });
-          }
-        });
-        setSheetData(sheets);
-      } catch (e) {
-        console.error('Failed to load template:', e);
-        setExcelUrl(null);
-        setSheetData([]);
-      }
     } catch (error: any) {
       message.error(error.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDownload = () => {
-    if (excelUrl) {
-      window.open(excelUrl, '_blank');
-    }
-  };
-
-  const renderSheetPreview = (sheet: SheetData) => {
-    if (!sheet.rows.length) {
-      return <p style={{ textAlign: 'center', color: '#999' }}>暂无数据</p>;
-    }
-
-    const columns = sheet.headers.map((h, i) => ({
-      title: h || `列${i + 1}`,
-      dataIndex: `col${i}`,
-      key: `col${i}`,
-      width: 150,
-      ellipsis: true,
-    }));
-
-    const data = sheet.rows.map((row, ri) => {
-      const obj: any = { key: ri };
-      row.forEach((cell, ci) => {
-        obj[`col${ci}`] = cell ?? '';
-      });
-      return obj;
-    });
-
-    return (
-      <Table
-        size="small"
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-        scroll={{ x: 'max-content', y: 400 }}
-        style={{ maxHeight: 450, overflow: 'auto' }}
-      />
-    );
   };
 
   const tabItems = [
@@ -170,45 +92,8 @@ export default function SystemPreviewModal({ systemId, visible, onClose }: Syste
             { title: '二级指标', dataIndex: 'level2Name', width: 120 },
             { title: '权重', dataIndex: 'weight', width: 80, render: (v: number) => v?.toFixed(4) },
             { title: '单位', dataIndex: 'unit', width: 80 },
-            { title: '年度目标', dataIndex: 'annualTarget', width: 100 },
-            { title: '进度目标', dataIndex: 'progressTarget', width: 100 },
           ]}
         />
-      ),
-    },
-    {
-      key: 'excel',
-      label: `Excel模板`,
-      children: (
-        <div>
-          <Space style={{ marginBottom: 12 }}>
-            <Button 
-              type="primary" 
-              icon={<DownloadOutlined />} 
-              onClick={handleDownload}
-              disabled={!excelUrl}
-            >
-              下载Excel文件
-            </Button>
-            <span style={{ color: '#666', fontSize: 12 }}>
-              {excelUrl ? '点击下载后在Excel/WPS中编辑' : '暂无模板文件'}
-            </span>
-          </Space>
-          <Tabs
-            items={sheetData.map((sheet, idx) => ({
-              key: `sheet_${idx}`,
-              label: sheet.name,
-              children: (
-                <div>
-                  <div style={{ marginBottom: 8, color: '#999', fontSize: 12 }}>
-                    <FileExcelOutlined /> {sheet.name} - {sheet.rows.length} 行数据
-                  </div>
-                  {renderSheetPreview(sheet)}
-                </div>
-              ),
-            }))}
-          />
-        </div>
       ),
     },
   ];

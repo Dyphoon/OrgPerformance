@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Space, Modal, Form, Input, Upload, message, Popconfirm, Checkbox } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, UploadOutlined, FileExcelOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd/es/upload/interface';
 import { api } from '../api';
 import type { System } from '../types';
 import SystemPreviewModal from '../components/SystemPreviewModal';
+import ExcelPreviewModal from '../components/ExcelPreviewModal';
 
 export default function SystemListPage() {
   const [data, setData] = useState<System[]>([]);
@@ -18,6 +19,8 @@ export default function SystemListPage() {
   const [submitting, setSubmitting] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewSystemId, setPreviewSystemId] = useState<number | null>(null);
+  const [excelPreviewVisible, setExcelPreviewVisible] = useState(false);
+  const [excelPreviewSystemId, setExcelPreviewSystemId] = useState<number | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -65,6 +68,11 @@ export default function SystemListPage() {
     setPreviewVisible(true);
   };
 
+  const handleExcelPreview = (record: System) => {
+    setExcelPreviewSystemId(record.id);
+    setExcelPreviewVisible(true);
+  };
+
   const handleSubmit = async (values: any) => {
     if (!editingSystem && fileList.length === 0) {
       message.error('请上传Excel模板文件');
@@ -104,21 +112,22 @@ export default function SystemListPage() {
     { title: '描述', dataIndex: 'description', key: 'description', ellipsis: true, width: 250 },
     { title: '机构数', dataIndex: 'institutionCount', key: 'institutionCount', width: 80 },
     { title: '指标数', dataIndex: 'indicatorCount', key: 'indicatorCount', width: 80 },
-    { 
-      title: '状态', 
-      dataIndex: 'status', 
-      key: 'status', 
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
       width: 80,
-      render: (s: number) => <span style={{ color: s ? '#52c41a' : '#999' }}>{s ? '启用' : '禁用'}</span> 
+      render: (s: number) => <span style={{ color: s ? '#52c41a' : '#999' }}>{s ? '启用' : '禁用'}</span>
     },
     {
       title: '操作',
       key: 'action',
-      width: 180,
+      width: 240,
       fixed: 'right' as const,
       render: (_: any, record: System) => (
         <Space size="small">
-          <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => handlePreview(record)}>查看</Button>
+          <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => handlePreview(record)}>详情</Button>
+          <Button type="link" size="small" icon={<FileExcelOutlined />} onClick={() => handleExcelPreview(record)}>预览</Button>
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)}>编辑</Button>
           <Popconfirm
             title="确认删除"
@@ -208,6 +217,11 @@ export default function SystemListPage() {
         systemId={previewSystemId}
         visible={previewVisible}
         onClose={() => setPreviewVisible(false)}
+      />
+      <ExcelPreviewModal
+        systemId={excelPreviewSystemId}
+        visible={excelPreviewVisible}
+        onClose={() => setExcelPreviewVisible(false)}
       />
     </div>
   );

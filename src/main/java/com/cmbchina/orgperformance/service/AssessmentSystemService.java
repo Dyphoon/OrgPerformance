@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AssessmentSystemService {
@@ -40,6 +41,9 @@ public class AssessmentSystemService {
 
     @Autowired
     private MinioService minioService;
+
+    @Autowired
+    private TemplateValidationService validationService;
 
     @Autowired
     private MonthlyMonitoringMapper monitoringMapper;
@@ -135,7 +139,15 @@ public class AssessmentSystemService {
 
     @Transactional
     public Long createSystemWithExcel(String name, String description, Boolean needApproval, MultipartFile file) throws IOException {
-        // 1. 创建体系记录
+        // 1. 校验模板格式
+        try (java.io.InputStream inputStream = file.getInputStream()) {
+            TemplateValidationService.ValidationResult validationResult = validationService.validate(inputStream);
+            if (!validationResult.isValid()) {
+                throw new TemplateValidationException(validationResult);
+            }
+        }
+
+        // 3. 创建体系记录
         AssessmentSystem system = new AssessmentSystem();
         system.setName(name);
         system.setDescription(description);
@@ -144,12 +156,12 @@ public class AssessmentSystemService {
         system.setCreatedBy("admin");
         systemMapper.insert(system);
 
-        // 2. 上传Excel模板到MinIO
+        // 4. 上传Excel模板到MinIO
         String fileKey = minioService.uploadTemplate(file, system.getId());
         system.setTemplateFileKey(fileKey);
         systemMapper.updateTemplateFileKey(system.getId(), fileKey);
 
-        // 3. 解析Excel模板，保存机构和指标信息
+        // 5. 解析Excel模板，保存机构和指标信息
         try (java.io.InputStream inputStream = file.getInputStream()) {
             org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook(inputStream);
 
@@ -270,6 +282,62 @@ public class AssessmentSystemService {
             throw new RuntimeException("Template not found");
         }
         return minioService.getPresignedUrl(minioService.getBucketTemplates(), system.getTemplateFileKey(), 30);
+    }
+
+    public String uploadTemplate(MultipartFile file) throws IOException {
+        return minioService.uploadTemplate(file, null);
+    }
+
+    @Transactional
+    public Long createSystemWithTemplate(String name, String description, Boolean needApproval, String templateFileKey) throws IOException {
+        AssessmentSystem system = new AssessmentSystem();
+        system.setName(name);
+        system.setDescription(description);
+        system.setNeedApproval(needApproval != null ? needApproval : false);
+        system.setStatus(1);
+        system.setCreatedBy("admin");
+        system.setTemplateFileKey(templateFileKey);
+        systemMapper.insert(system);
+
+        minioService.copyTemplateToSystem(templateFileKey, system.getId());
+
+        java.io.InputStream inputStream = minioService.downloadTemplate(templateFileKey);
+        try (org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook(inputStream)) {
+            List<Institution> institutions = templateParser.parseInstitutionSheet(workbook);
+            for (Institution inst : institutions) {
+                inst.setSystemId(system.getId());
+                inst.setCreatedAt(java.time.LocalDateTime.now());
+            }
+            if (!institutions.isEmpty()) {
+                institutionMapper.batchInsert(institutions);
+            }
+
+            List<Indicator> indicators = templateParser.parseTemplateSheet(workbook);
+            for (Indicator ind : indicators) {
+                ind.setSystemId(system.getId());
+            }
+            if (!indicators.isEmpty()) {
+                indicatorMapper.batchInsert(indicators);
+            }
+        }
+
+        return system.getId();
+    }
+
+    public Map<String, Object> parseTemplatePreview(String templateFileKey) throws IOException {
+        try {
+            java.io.InputStream inputStream = minioService.downloadTemplate(templateFileKey);
+            TemplateValidationService.ValidationResult validationResult = validationService.validate(inputStream);
+            inputStream.close();
+            return validationService.generateDetailedReport(validationResult);
+        } catch (Exception e) {
+            Map<String, Object> result = new java.util.LinkedHashMap<>();
+            result.put("valid", false);
+            result.put("errors", List.of("Failed to parse template: " + e.getMessage()));
+            result.put("warnings", List.of());
+            result.put("summary", "解析模板时发生错误: " + e.getMessage());
+            return result;
+        }
     }
 
     private SystemVO convertToVO(AssessmentSystem system) {

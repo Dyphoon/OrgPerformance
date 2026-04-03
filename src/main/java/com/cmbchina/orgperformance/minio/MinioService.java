@@ -51,8 +51,14 @@ public class MinioService {
     public String uploadTemplate(MultipartFile file, Long systemId) {
         try {
             ensureBucketExists(bucketTemplates);
-            String objectName = String.format("templates/%d/template_%d.xlsx",
-                    systemId, System.currentTimeMillis());
+            String objectName;
+            if (systemId != null) {
+                objectName = String.format("templates/%d/template_%d.xlsx",
+                        systemId, System.currentTimeMillis());
+            } else {
+                objectName = String.format("templates/temp/template_%d.xlsx",
+                        System.currentTimeMillis());
+            }
 
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -138,6 +144,16 @@ public class MinioService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to download file: " + objectName, e);
         }
+    }
+
+    public InputStream downloadTemplate(String fileKey) {
+        return downloadFile(bucketTemplates, fileKey);
+    }
+
+    public void copyTemplateToSystem(String sourceFileKey, Long systemId) {
+        String destObjectName = String.format("templates/%d/template_%d.xlsx",
+                systemId, System.currentTimeMillis());
+        copyFile(bucketTemplates, sourceFileKey, bucketTemplates, destObjectName);
     }
 
     public String getPresignedUrl(String bucket, String objectName, int expirationMinutes) {

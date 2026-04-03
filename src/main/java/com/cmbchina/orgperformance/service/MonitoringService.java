@@ -635,4 +635,18 @@ public class MonitoringService {
         // 最后删除 monthly_monitoring
         monitoringMapper.deleteById(monitoringId);
     }
+
+    // ==================== Notification methods for MCP ====================
+
+    public List<Notification> getNotifications(Long userId) {
+        return notificationService.getUserNotifications(userId);
+    }
+
+    public int getUnreadNotificationCount(Long userId) {
+        return notificationService.getUnreadCount(userId);
+    }
+
+    public void markNotificationRead(Long notificationId) {
+        notificationService.markAsRead(notificationId);
+    }
 }
