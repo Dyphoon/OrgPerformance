@@ -133,6 +133,9 @@ public class ExcelDataReader {
         Map<String, Object> result = new HashMap<>();
 
         try (Workbook workbook = new XSSFWorkbook(fileStream)) {
+
+            workbook.getForceFormulaRecalculation();
+
             Sheet sheet = workbook.getSheet(SHEET_TEMPLATE);
             if (sheet == null) return result;
 

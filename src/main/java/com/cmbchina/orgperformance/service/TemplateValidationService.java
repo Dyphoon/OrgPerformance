@@ -405,6 +405,17 @@ public class TemplateValidationService {
             if (cell1_3 == null || !"收数人".equals(getCellValueAsString(cell1_3).trim())) {
                 result.addError("E304", "第3行第1列应为【收数人】", SHEET_DATA_COLLECTION, 3, 1);
             }
+            // 校验收数人数据格式：姓名/6位工号
+            int lastCol = getLastColumnNum(sheet);
+            for (int col = 1; col < lastCol; col++) {
+                Cell dataCell = row3.getCell(col);
+                String value = getCellValueAsString(dataCell);
+                if (value != null && !value.trim().isEmpty()) {
+                    if (!value.matches("^.+/\\d{6}$")) {
+                        result.addWarning("W302", "第3行第" + (col + 1) + "列收数人格式应为【姓名/6位工号】，如：张三/RMB001", SHEET_DATA_COLLECTION, 3, col + 1);
+                    }
+                }
+            }
         }
 
         // 校验第4行（指标单位行）
@@ -416,6 +427,7 @@ public class TemplateValidationService {
             if (cell1_4 == null || !"指标单位".equals(getCellValueAsString(cell1_4).trim())) {
                 result.addError("E306", "第4行第1列应为【指标单位】", SHEET_DATA_COLLECTION, 4, 1);
             }
+            // 指标单位无需校验具体值（单位种类繁多）
         }
 
         // 检查是否有数据列（指标）
