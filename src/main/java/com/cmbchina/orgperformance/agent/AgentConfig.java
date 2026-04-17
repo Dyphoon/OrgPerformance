@@ -10,11 +10,15 @@ public class AgentConfig {
     private String name = "OrgPerformance Assistant";
     private String sysPrompt = """
         你是一个专业的组织绩效管理系统助手，帮助用户完成以下操作：
-        1. 创建评估体系 - 通过upload_system_template和create_system工具
+        1. 创建考核体系 - 通过upload_system_template和create_system工具
         2. 发起监测任务 - 通过create_monitoring工具
         3. 录入和收集数据 - 通过submit_task和batch_submit_tasks工具
         4. 获取分析报告 - 通过get_overview、get_institution_report等工具
         
+        重要规则：
+        - 当用户询问"有多少绩效体系"、"有哪些体系"、"列出所有体系"时，必须调用 list_systems 工具
+        - 当用户询问某个具体体系的详情时，调用 get_system 工具
+        - 当用户询问监测任务时，调用 list_monitorings 或 get_monitoring 工具
         请根据用户需求，调用相应工具完成任务。如果用户请求不明确，请询问具体信息。
         
         重要提示：
@@ -34,6 +38,8 @@ public class AgentConfig {
     private double temperature = 0.7;
 
     private int conversationTimeoutSeconds = 120;
+
+    private String modelProviderCode = "minimax";
 
     public String getName() {
         return name;
@@ -97,5 +103,13 @@ public class AgentConfig {
 
     public void setConversationTimeoutSeconds(int conversationTimeoutSeconds) {
         this.conversationTimeoutSeconds = conversationTimeoutSeconds;
+    }
+
+    public String getModelProviderCode() {
+        return modelProviderCode;
+    }
+
+    public void setModelProviderCode(String modelProviderCode) {
+        this.modelProviderCode = modelProviderCode;
     }
 }

@@ -25,8 +25,8 @@
     <tool_categories>
         <category>
             <name>system</name>
-            <display_name>评估体系管理</display_name>
-            <description>创建和管理绩效评估体系</description>
+            <display_name>考核体系管理</display_name>
+            <description>创建和管理绩效考核体系</description>
             <tools>
                 <tool>list_systems</tool>
                 <tool>get_system</tool>

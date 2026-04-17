@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import AgentPage from './pages/AgentPage';
 import SkillPage from './pages/SkillPage';
 import McpPage from './pages/McpPage';
+import ModelProviderPage from './pages/ModelProviderPage';
 import DashboardPage from './pages/DashboardPage';
 import SystemListPage from './pages/SystemListPage';
 import MonitoringListPage from './pages/MonitoringListPage';
@@ -39,6 +40,7 @@ function AppRoutes() {
         <Route path="agent" element={<AgentPage />} />
         <Route path="skills" element={<SkillPage />} />
         <Route path="mcp" element={<McpPage />} />
+        <Route path="model-providers" element={<ModelProviderPage />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="systems" element={<SystemListPage />} />
         <Route path="monitorings" element={<MonitoringListPage />} />

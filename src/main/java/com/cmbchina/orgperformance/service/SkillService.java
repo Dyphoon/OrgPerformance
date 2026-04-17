@@ -28,16 +28,16 @@ public class SkillService {
     private static final Logger logger = LoggerFactory.getLogger(SkillService.class);
 
     private static final List<ToolInfo> AVAILABLE_TOOLS = Arrays.asList(
-        new ToolInfo("list_systems", "查询评估系统列表，支持按名称、状态筛选和分页", "系统管理"),
-        new ToolInfo("get_system", "获取指定评估系统的详细信息", "系统管理"),
-        new ToolInfo("create_system", "创建新的评估系统", "系统管理"),
-        new ToolInfo("upload_system_template", "上传并验证评估系统的Excel模板文件", "系统管理"),
-        new ToolInfo("parse_system_template", "解析并验证已上传的Excel模板文件", "系统管理"),
-        new ToolInfo("get_system_institutions", "获取指定系统下的所有机构", "系统管理"),
-        new ToolInfo("get_system_indicators", "获取指定系统下的所有指标", "系统管理"),
-        new ToolInfo("get_system_groups", "获取指定系统下的所有分组名称", "系统管理"),
-        new ToolInfo("validate_template", "验证模板数据是否符合系统格式要求", "系统管理"),
-        new ToolInfo("list_monitorings", "查询监测任务列表，支持按系统、状态、年份、月份筛选和分页", "监测管理"),
+        new ToolInfo("list_systems", "查询考核体系列表，支持按名称、状态筛选和分页", "体系管理"),
+        new ToolInfo("get_system", "获取指定考核体系的详细信息", "体系管理"),
+        new ToolInfo("create_system", "创建新的考核体系", "体系管理"),
+        new ToolInfo("upload_system_template", "上传并验证考核体系的Excel模板文件", "体系管理"),
+        new ToolInfo("parse_system_template", "解析并验证已上传的Excel模板文件", "体系管理"),
+        new ToolInfo("get_system_institutions", "获取指定体系下的所有机构", "体系管理"),
+        new ToolInfo("get_system_indicators", "获取指定体系下的所有指标", "体系管理"),
+        new ToolInfo("get_system_groups", "获取指定体系下的所有分组名称", "体系管理"),
+        new ToolInfo("validate_template", "验证模板数据是否符合体系格式要求", "体系管理"),
+        new ToolInfo("list_monitorings", "查询监测任务列表，支持按体系、状态、年份、月份筛选和分页", "监测管理"),
         new ToolInfo("get_monitoring", "获取指定监测任务的详细信息", "监测管理"),
         new ToolInfo("create_monitoring", "创建新的监测任务用于数据采集", "监测管理"),
         new ToolInfo("start_monitoring", "启动监测任务的数据采集阶段", "监测管理"),
@@ -60,7 +60,7 @@ public class SkillService {
         new ToolInfo("mcporter_call", "调用指定 MCP 服务器的工具，支持冒号分隔和函数调用两种格式", "MCP管理"),
         new ToolInfo("mcporter_generate_cli", "将 MCP 服务器定义为独立的 CLI 工具", "MCP管理"),
         new ToolInfo("mcporter_emit_ts", "生成 TypeScript 类型定义文件或客户端包装器", "MCP管理"),
-        new ToolInfo("execute_command", "执行 shell 命令，返回命令输出结果", "系统工具")
+        new ToolInfo("execute_command", "执行 shell 命令，返回命令输出结果", "体系工具")
     );
 
     @Autowired

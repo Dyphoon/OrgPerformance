@@ -35,6 +35,9 @@ export default function MainLayout() {
     { key: '/agent', icon: <RobotOutlined />, label: 'AI助手' },
     { key: '/skills', icon: <ToolOutlined />, label: '技能市场' },
     { key: '/mcp', icon: <ApiOutlined />, label: 'MCP服务' },
+    ...(hasRole('admin') ? [
+      { key: '/model-providers', icon: <ApiOutlined />, label: '模型服务' },
+    ] : []),
     { key: '/dashboard', icon: <DashboardOutlined />, label: '驾驶舱' },
     ...(hasRole('admin') ? [
       { key: '/systems', icon: <AppstoreOutlined />, label: '考核体系管理' },

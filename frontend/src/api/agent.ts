@@ -31,22 +31,27 @@ export interface UploadedFile {
 }
 
 export const agentApi = {
-  chat: async (sessionId: string, message: string, templateFileKey?: string): Promise<AgentChatResponse> => {
+  chat: async (sessionId: string, message: string, templateFileKey?: string, signal?: AbortSignal, modelProviderId?: number): Promise<AgentChatResponse> => {
     const token = localStorage.getItem('token');
-    
+
     const response = await fetch(`${API_BASE}/agent/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',
       },
-      body: JSON.stringify({ sessionId, message, templateFileKey }),
+      body: JSON.stringify({ sessionId, message, templateFileKey, modelProviderId }),
+      signal,
     });
 
     if (response.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
       throw new Error('Unauthorized');
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
     }
 
     return response.json();

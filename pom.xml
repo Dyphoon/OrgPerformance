@@ -145,9 +145,23 @@
         </dependency>
 
         <!-- Spring AI MCP Server -->
+        <!-- 暂时移除 spring-ai-starter-mcp-server-webmvc，因为它会带来 tools.jackson 3.x 与 Spring Boot 的 Jackson 2.15 冲突
+             只添加注解依赖，不包含服务器实现
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+        </dependency>
+        -->
+
+        <!-- Spring AI MCP Annotations (仅注解，不包含服务器) -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-mcp-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springaicommunity</groupId>
+            <artifactId>mcp-annotations</artifactId>
+            <version>0.8.0</version>
         </dependency>
 
         <!-- AgentScope Java (agentscope-core) -->
@@ -155,6 +169,24 @@
             <groupId>io.agentscope</groupId>
             <artifactId>agentscope</artifactId>
             <version>1.0.11</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>tools.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>tools.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>tools.jackson.dataformat</groupId>
+                    <artifactId>jackson-dataformat-yaml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.networknt</groupId>
+                    <artifactId>json-schema-validator</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Test -->

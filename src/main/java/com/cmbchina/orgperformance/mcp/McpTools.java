@@ -36,9 +36,9 @@ public class McpTools {
     @Autowired
     private FileContextService fileContextService;
 
-    @McpTool(name = "list_systems", description = "查询评估系统列表，支持按名称、状态筛选和分页")
+    @McpTool(name = "list_systems", description = "查询考核体系列表，支持按名称、状态筛选和分页")
     public List<SystemVO> listSystems(
-            @McpToolParam(description = "按系统名称筛选") String name,
+            @McpToolParam(description = "按体系名称筛选") String name,
             @McpToolParam(description = "按状态筛选（1=启用，0=停用）") Integer status,
             @McpToolParam(description = "页码（默认1）", required = false) Integer page,
             @McpToolParam(description = "每页数量（默认10）", required = false) Integer pageSize) {
@@ -47,15 +47,15 @@ public class McpTools {
         return systemService.getSystemList(name, status, pageNum, pageSizeNum);
     }
 
-    @McpTool(name = "get_system", description = "获取指定评估系统的详细信息")
-    public SystemVO getSystem(@McpToolParam(description = "系统ID", required = true) Long id) {
+    @McpTool(name = "get_system", description = "获取指定考核体系的详细信息")
+    public SystemVO getSystem(@McpToolParam(description = "体系ID", required = true) Long id) {
         return systemService.getSystemById(id);
     }
 
-    @McpTool(name = "create_system", description = "创建新的评估系统")
+    @McpTool(name = "create_system", description = "创建新的考核体系")
     public Map<String, Object> createSystem(
-            @McpToolParam(description = "系统名称", required = true) String name,
-            @McpToolParam(description = "系统描述", required = false) String description,
+            @McpToolParam(description = "体系名称", required = true) String name,
+            @McpToolParam(description = "体系描述", required = false) String description,
             @McpToolParam(description = "是否需要审批", required = false) Boolean needApproval,
             @McpToolParam(description = "模板文件key", required = true) String templateFileKey) {
         try {
@@ -67,7 +67,7 @@ public class McpTools {
         }
     }
 
-    @McpTool(name = "upload_system_template", description = "上传并验证评估系统的Excel模板文件")
+    @McpTool(name = "upload_system_template", description = "上传并验证考核体系的Excel模板文件")
     public Map<String, Object> uploadSystemTemplate(
             @McpToolParam(description = "原始文件名，需包含 .xlsx 扩展名", required = true) String fileName,
             @McpToolParam(description = "Base64编码的Excel文件内容", required = true) String fileContent) {
@@ -95,21 +95,21 @@ public class McpTools {
         }
     }
 
-    @McpTool(name = "get_system_institutions", description = "获取指定系统下的所有机构")
+    @McpTool(name = "get_system_institutions", description = "获取指定体系下的所有机构")
     public List<?> getSystemInstitutions(
-            @McpToolParam(description = "系统ID", required = true) Long systemId) {
+            @McpToolParam(description = "体系ID", required = true) Long systemId) {
         return systemService.getInstitutionsBySystemId(systemId);
     }
 
-    @McpTool(name = "get_system_indicators", description = "获取指定系统下的所有指标")
+    @McpTool(name = "get_system_indicators", description = "获取指定体系下的所有指标")
     public List<?> getSystemIndicators(
-            @McpToolParam(description = "系统ID", required = true) Long systemId) {
+            @McpToolParam(description = "体系ID", required = true) Long systemId) {
         return systemService.getIndicatorsBySystemId(systemId);
     }
 
-    @McpTool(name = "get_system_groups", description = "获取指定系统下的所有分组名称")
+    @McpTool(name = "get_system_groups", description = "获取指定体系下的所有分组名称")
     public List<String> getSystemGroups(
-            @McpToolParam(description = "系统ID", required = true) Long systemId) {
+            @McpToolParam(description = "体系ID", required = true) Long systemId) {
         try {
             return systemService.getGroupNamesBySystemId(systemId);
         } catch (Exception e) {
@@ -118,9 +118,9 @@ public class McpTools {
         }
     }
 
-    @McpTool(name = "validate_template", description = "验证模板数据是否符合系统格式要求")
+    @McpTool(name = "validate_template", description = "验证模板数据是否符合体系格式要求")
     public Map<String, Object> validateTemplate(
-            @McpToolParam(description = "系统ID", required = true) Long systemId,
+            @McpToolParam(description = "体系ID", required = true) Long systemId,
             @McpToolParam(description = "机构数据列表", required = true) List<Map<String, Object>> institutions,
             @McpToolParam(description = "指标数据列表", required = true) List<Map<String, Object>> indicators) {
         var system = systemService.getSystemById(systemId);
@@ -138,9 +138,9 @@ public class McpTools {
         return Map.of("valid", errors.isEmpty(), "errors", errors);
     }
 
-    @McpTool(name = "list_monitorings", description = "查询监测任务列表，支持按系统、状态、年份、月份筛选和分页")
+    @McpTool(name = "list_monitorings", description = "查询监测任务列表，支持按体系、状态、年份、月份筛选和分页")
     public List<MonitoringVO> listMonitorings(
-            @McpToolParam(description = "按系统ID筛选", required = false) Long systemId,
+            @McpToolParam(description = "按体系ID筛选", required = false) Long systemId,
             @McpToolParam(description = "按状态筛选", required = false) String status,
             @McpToolParam(description = "按年份筛选", required = false) Integer year,
             @McpToolParam(description = "按月份筛选（1-12）", required = false) Integer month,
@@ -158,7 +158,7 @@ public class McpTools {
 
     @McpTool(name = "create_monitoring", description = "创建新的监测任务用于数据采集")
     public Map<String, Object> createMonitoring(
-            @McpToolParam(description = "评估系统ID", required = true) Long systemId,
+            @McpToolParam(description = "考核体系ID", required = true) Long systemId,
             @McpToolParam(description = "年份", required = true) Integer year,
             @McpToolParam(description = "月份（1-12）", required = true) Integer month,
             @McpToolParam(description = "截止日期", required = false) String deadline,

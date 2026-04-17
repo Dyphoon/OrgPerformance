@@ -18,15 +18,24 @@ public class AgentController {
     public Map<String, Object> chat(@RequestBody ChatRequest request, @AuthenticationPrincipal UserDetails user) {
         String sessionId = request.getSessionId() != null ? request.getSessionId() : "default";
         String message = request.getMessage();
-        String userId = user != null ? user.getUsername().split(",")[0] : "0";
+        String userId = "0";
+        if (user != null && user.getUsername() != null) {
+            String username = user.getUsername();
+            userId = username.contains(",") ? username.split(",")[0] : username;
+        }
         String templateFileKey = request.getTemplateFileKey();
-        
-        AgentService.AgentResponse response = agentService.chat(sessionId, userId, message, templateFileKey);
-        
-        if (response.isSuccess()) {
-            return Map.of("success", true, "sessionId", sessionId, "message", response.getContent());
-        } else {
-            return Map.of("success", false, "sessionId", sessionId, "error", response.getError());
+        Long modelProviderId = request.getModelProviderId();
+
+        try {
+            AgentService.AgentResponse response = agentService.chat(sessionId, userId, message, templateFileKey, modelProviderId);
+
+            if (response.isSuccess()) {
+                return Map.of("success", true, "sessionId", sessionId, "message", response.getContent());
+            } else {
+                return Map.of("success", false, "sessionId", sessionId, "error", response.getError());
+            }
+        } catch (Exception e) {
+            return Map.of("success", false, "sessionId", sessionId, "error", e.getMessage());
         }
     }
 
@@ -43,6 +52,7 @@ public class AgentController {
         private String sessionId;
         private String message;
         private String templateFileKey;
+        private Long modelProviderId;
 
         public String getSessionId() { return sessionId; }
         public void setSessionId(String sessionId) { this.sessionId = sessionId; }
@@ -50,5 +60,7 @@ public class AgentController {
         public void setMessage(String message) { this.message = message; }
         public String getTemplateFileKey() { return templateFileKey; }
         public void setTemplateFileKey(String templateFileKey) { this.templateFileKey = templateFileKey; }
+        public Long getModelProviderId() { return modelProviderId; }
+        public void setModelProviderId(Long modelProviderId) { this.modelProviderId = modelProviderId; }
     }
 }

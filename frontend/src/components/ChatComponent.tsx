@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Button, Input, Avatar, Spin, Card, Collapse, Upload, Tag, message, Badge } from 'antd';
-import { SendOutlined, RobotOutlined, UserOutlined, ClearOutlined, BulbOutlined, PaperClipOutlined, FileOutlined, FileWordOutlined, FileExcelOutlined, FilePptOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Input, Avatar, Spin, Card, Collapse, Upload, Tag, message, Badge, Select, Space } from 'antd';
+import { SendOutlined, RobotOutlined, UserOutlined, ClearOutlined, BulbOutlined, PaperClipOutlined, FileOutlined, FileWordOutlined, FileExcelOutlined, FilePptOutlined, DeleteOutlined, StopOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { agentApi } from '../api/agent';
+import { modelProviderApi } from '../api/modelProvider';
 import type { UploadedFile } from '../api/agent';
+import type { ModelProvider } from '../api/modelProvider';
 import { useAuth } from '../store/AuthContext';
 
 interface Message {
@@ -57,8 +59,11 @@ export default function ChatComponent() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [modelProviders, setModelProviders] = useState<ModelProvider[]>([]);
+  const [selectedModelId, setSelectedModelId] = useState<number | undefined>();
   const sessionId = useMemo(() => `session_${user?.id || 'anonymous'}_${Date.now()}`, []);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,7 +75,20 @@ export default function ChatComponent() {
 
   useEffect(() => {
     loadSessionFiles();
+    loadModelProviders();
   }, [sessionId]);
+
+  const loadModelProviders = async () => {
+    try {
+      const providers = await modelProviderApi.listActive();
+      setModelProviders(providers || []);
+      if (providers && providers.length > 0) {
+        setSelectedModelId(providers[0].id);
+      }
+    } catch (error) {
+      console.error('Failed to load model providers:', error);
+    }
+  };
 
   const loadSessionFiles = async () => {
     try {
@@ -159,11 +177,14 @@ export default function ChatComponent() {
     setInputValue('');
     setLoading(true);
 
+    abortControllerRef.current = new AbortController();
+
     const templateFile = uploadedFiles.find(f => f.isTemplate && f.templateFileKey);
     const templateFileKey = templateFile?.templateFileKey;
 
+    let response;
     try {
-      const response = await agentApi.chat(sessionId, userMessage.content, templateFileKey);
+      response = await agentApi.chat(sessionId, userMessage.content, templateFileKey, abortControllerRef.current.signal, selectedModelId);
       
       const parsed = parseContent(response.message || response.error || '抱歉，我遇到了一些问题。');
       const assistantMessage: Message = {
@@ -176,15 +197,41 @@ export default function ChatComponent() {
       
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
+      let errorContent = 'AI 服务暂不可用，请稍后重试。如果问题持续存在，请联系管理员。';
+      if (error instanceof Error && error.name === 'AbortError') {
+        const abortMessage: Message = {
+          id: `abort_${Date.now()}`,
+          role: 'assistant',
+          content: '已终止回答。',
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, abortMessage]);
+        return;
+      } else if (response?.error) {
+        if (response.error.includes('529') || response.error.includes('overloaded_error')) {
+          errorContent = 'AI 服务当前负载较高，请稍后重试。给你带来的不便敬请谅解！';
+        } else if (response.error.includes('超时') || response.error.includes('timeout')) {
+          errorContent = 'AI 服务响应超时，请稍后重试。';
+        }
+      }
       const errorMessage: Message = {
         id: `error_${Date.now()}`,
         role: 'assistant',
-        content: '网络错误，请稍后重试。',
+        content: errorContent,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setLoading(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -233,7 +280,7 @@ export default function ChatComponent() {
             <p>您好！我是组织绩效管理助手</p>
             <p style={{ fontSize: 12 }}>我可以帮您：</p>
             <ul style={{ fontSize: 12, textAlign: 'left', display: 'inline-block' }}>
-              <li>创建评估体系</li>
+              <li>创建考核体系</li>
               <li>发起监测任务</li>
               <li>录入和收集数据</li>
               <li>获取分析报告</li>
@@ -350,7 +397,7 @@ export default function ChatComponent() {
         ))}
         
         {loading && (
-          <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16, alignItems: 'center' }}>
             <Avatar icon={<RobotOutlined />} style={{ marginRight: 8, background: '#1890ff' }} />
             <div
               style={{
@@ -406,14 +453,29 @@ export default function ChatComponent() {
       )}
 
       <div style={{ padding: 16, borderTop: '1px solid #eee', background: '#fff' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <Select
+            value={selectedModelId}
+            onChange={setSelectedModelId}
+            style={{ width: 220 }}
+            placeholder="选择模型"
+            disabled={loading}
+          >
+            {modelProviders.map(provider => (
+              <Select.Option key={provider.id} value={provider.id}>
+                {provider.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <Upload
             beforeUpload={handleFileUpload}
             showUploadList={false}
             accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx"
           >
-            <Button 
-              icon={<PaperClipOutlined />} 
+            <Button
+              icon={<PaperClipOutlined />}
               loading={uploading}
               disabled={loading}
               title="上传 Office 文件"
@@ -426,16 +488,15 @@ export default function ChatComponent() {
             placeholder="输入您的问题，按 Enter 发送..."
             autoSize={{ minRows: 1, maxRows: 4 }}
             style={{ flex: 1 }}
-            disabled={loading}
           />
-          <Button 
-            type="primary" 
-            icon={<SendOutlined />} 
-            onClick={handleSend}
-            loading={loading}
-            disabled={!inputValue.trim()}
+          <Button
+            type="primary"
+            icon={loading ? <StopOutlined /> : <SendOutlined />}
+            onClick={loading ? handleStop : handleSend}
+            danger={loading}
+            disabled={!loading && !inputValue.trim()}
           >
-            发送
+            {loading ? '终止' : '发送'}
           </Button>
         </div>
         <div style={{ marginTop: 8, fontSize: 11, color: '#999' }}>

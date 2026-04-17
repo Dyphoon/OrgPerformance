@@ -3,6 +3,8 @@ package com.cmbchina.orgperformance.agent;
 import com.cmbchina.orgperformance.service.*;
 import com.cmbchina.orgperformance.vo.*;
 import io.agentscope.core.tool.Tool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +14,7 @@ import java.util.Map;
 
 @Component
 public class AgentTools {
+    private static final Logger logger = LoggerFactory.getLogger(AgentTools.class);
 
     @Autowired
     private AssessmentSystemService systemService;
@@ -28,23 +31,26 @@ public class AgentTools {
     @Autowired
     private ReportService reportService;
 
-    @Tool(name = "list_systems", description = "查询评估系统列表，支持按名称、状态筛选和分页")
+    @Tool(name = "list_systems", description = "查询考核体系列表，支持按名称、状态筛选和分页")
     public List<SystemVO> listSystems(
             String name,
             Integer status,
             Integer page,
             Integer pageSize) {
+        logger.info("list_systems called with name={}, status={}, page={}, pageSize={}", name, status, page, pageSize);
         int pageNum = page != null ? page : 1;
         int pageSizeNum = pageSize != null ? pageSize : 10;
-        return systemService.getSystemList(name, status, pageNum, pageSizeNum);
+        List<SystemVO> result = systemService.getSystemList(name, status, pageNum, pageSizeNum);
+        logger.info("list_systems returned {} results", result != null ? result.size() : 0);
+        return result;
     }
 
-    @Tool(name = "get_system", description = "获取指定评估系统的详细信息")
+    @Tool(name = "get_system", description = "获取指定考核体系的详细信息")
     public SystemVO getSystem(Long id) {
         return systemService.getSystemById(id);
     }
 
-    @Tool(name = "create_system", description = "创建新的评估系统")
+    @Tool(name = "create_system", description = "创建新的考核体系")
     public Map<String, Object> createSystem(
             String name,
             String description,
@@ -59,7 +65,7 @@ public class AgentTools {
         }
     }
 
-    @Tool(name = "upload_system_template", description = "上传并验证评估系统的Excel模板文件")
+    @Tool(name = "upload_system_template", description = "上传并验证考核体系的Excel模板文件")
     public Map<String, Object> uploadSystemTemplate(String fileName, String fileContent) {
         try {
             byte[] content = java.util.Base64.getDecoder().decode(fileContent);
@@ -84,7 +90,7 @@ public class AgentTools {
         }
     }
 
-    @Tool(name = "get_system_institutions", description = "获取指定系统下的所有机构")
+    @Tool(name = "get_system_institutions", description = "获取指定体系下的所有机构")
     public String getSystemInstitutions(Long systemId) {
         try {
             var list = systemService.getInstitutionsBySystemId(systemId);
@@ -95,7 +101,7 @@ public class AgentTools {
         }
     }
 
-    @Tool(name = "get_system_indicators", description = "获取指定系统下的所有指标")
+    @Tool(name = "get_system_indicators", description = "获取指定体系下的所有指标")
     public String getSystemIndicators(Long systemId) {
         try {
             var list = systemService.getIndicatorsBySystemId(systemId);
@@ -106,7 +112,7 @@ public class AgentTools {
         }
     }
 
-    @Tool(name = "get_system_groups", description = "获取指定系统下的所有分组名称")
+    @Tool(name = "get_system_groups", description = "获取指定体系下的所有分组名称")
     public List<String> getSystemGroups(Long systemId) {
         try {
             return systemService.getGroupNamesBySystemId(systemId);
@@ -115,7 +121,7 @@ public class AgentTools {
         }
     }
 
-    @Tool(name = "validate_template", description = "验证模板数据是否符合系统格式要求")
+    @Tool(name = "validate_template", description = "验证模板数据是否符合体系格式要求")
     public Map<String, Object> validateTemplate(
             Long systemId,
             String institutionsJson,
@@ -135,7 +141,7 @@ public class AgentTools {
         return Map.of("valid", errors.isEmpty(), "errors", errors);
     }
 
-    @Tool(name = "list_monitorings", description = "查询监测任务列表，支持按系统、状态、年份、月份筛选和分页")
+    @Tool(name = "list_monitorings", description = "查询监测任务列表，支持按体系、状态、年份、月份筛选和分页")
     public List<MonitoringVO> listMonitorings(
             Long systemId,
             String status,
