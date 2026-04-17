@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.SkillMapper">
+
+    <select id="selectById" resultType="com.cmbchina.orgperformance.entity.Skill">
+        SELECT * FROM skill WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="com.cmbchina.orgperformance.entity.Skill">
+        SELECT * FROM skill WHERE is_active = 1 ORDER BY category, id
+    </select>
+
+    <select id="selectByCategory" resultType="com.cmbchina.orgperformance.entity.Skill">
+        SELECT * FROM skill WHERE category = #{category} AND is_active = 1 ORDER BY id
+    </select>
+
+    <select id="selectBuiltIn" resultType="com.cmbchina.orgperformance.entity.Skill">
+        SELECT * FROM skill WHERE is_built_in = 1 AND is_active = 1 ORDER BY category, id
+    </select>
+
+    <select id="selectInstalledByUserId" resultType="com.cmbchina.orgperformance.entity.Skill">
+        SELECT s.* FROM skill s
+        INNER JOIN user_skill us ON s.id = us.skill_id
+        WHERE us.user_id = #{userId} AND us.is_installed = 1 AND s.is_active = 1
+        ORDER BY s.category, s.id
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.cmbchina.orgperformance.entity.Skill">
+        INSERT INTO skill (name, description, icon, category, prompt, tools, is_built_in, is_active, created_at, updated_at, markdown_content, script_path, script_content, version, author)
+        VALUES (#{name}, #{description}, #{icon}, #{category}, #{prompt}, #{tools}, #{isBuiltIn}, #{isActive}, NOW(), NOW(), #{markdownContent}, #{scriptPath}, #{scriptContent}, #{version}, #{author})
+    </insert>
+
+    <update id="update" parameterType="com.cmbchina.orgperformance.entity.Skill">
+        UPDATE skill SET
+            name=#{name},
+            description=#{description},
+            icon=#{icon},
+            category=#{category},
+            prompt=#{prompt},
+            tools=#{tools},
+            is_active=#{isActive},
+            markdown_content=#{markdownContent},
+            script_path=#{scriptPath},
+            script_content=#{scriptContent},
+            version=#{version},
+            author=#{author},
+            updated_at=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM skill WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -33,6 +33,9 @@ public class McpTools {
     @Autowired
     private ReportService reportService;
 
+    @Autowired
+    private FileContextService fileContextService;
+
     @McpTool(name = "list_systems", description = "查询评估系统列表，支持按名称、状态筛选和分页")
     public List<SystemVO> listSystems(
             @McpToolParam(description = "按系统名称筛选") String name,

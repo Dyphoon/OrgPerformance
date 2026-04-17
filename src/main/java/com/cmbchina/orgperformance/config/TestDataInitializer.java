@@ -2,12 +2,16 @@ package com.cmbchina.orgperformance.config;
 
 import com.cmbchina.orgperformance.entity.Institution;
 import com.cmbchina.orgperformance.entity.InstitutionLeader;
+import com.cmbchina.orgperformance.entity.Skill;
 import com.cmbchina.orgperformance.entity.SysRole;
 import com.cmbchina.orgperformance.entity.SysUser;
+import com.cmbchina.orgperformance.entity.UserSkill;
 import com.cmbchina.orgperformance.mapper.InstitutionLeaderMapper;
 import com.cmbchina.orgperformance.mapper.InstitutionMapper;
+import com.cmbchina.orgperformance.mapper.SkillMapper;
 import com.cmbchina.orgperformance.mapper.SysRoleMapper;
 import com.cmbchina.orgperformance.mapper.SysUserMapper;
+import com.cmbchina.orgperformance.mapper.UserSkillMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +35,13 @@ public class TestDataInitializer implements CommandLineRunner {
     
     @Autowired
     private InstitutionLeaderMapper leaderMapper;
-    
+
+    @Autowired
+    private SkillMapper skillMapper;
+
+    @Autowired
+    private UserSkillMapper userSkillMapper;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -86,7 +96,7 @@ public class TestDataInitializer implements CommandLineRunner {
         createUserIfNotExists(7L, "leader3", encodedPassword, "孙八", "L003", "sunba@cmbc.com", "13800001007", Arrays.asList(3L));
     }
 
-    private void createUserIfNotExists(Long id, String username, String password, String name, 
+    private void createUserIfNotExists(Long id, String username, String password, String name,
                                        String empNo, String email, String phone, List<Long> roleIds) {
         try {
             SysUser existing = userMapper.selectById(id);
@@ -97,7 +107,7 @@ public class TestDataInitializer implements CommandLineRunner {
         } catch (Exception e) {
             // 用户不存在，创建
         }
-        
+
         SysUser user = new SysUser();
         user.setUsername(username);
         user.setPassword(password);
@@ -108,13 +118,38 @@ public class TestDataInitializer implements CommandLineRunner {
         user.setStatus(1);
         user.setCreatedAt(java.time.LocalDateTime.now());
         user.setUpdatedAt(java.time.LocalDateTime.now());
-        
+
         try {
             userMapper.insert(user);
             userMapper.insertUserRoles(user.getId(), roleIds);
             System.out.println("Created user: " + username);
+            // 自动为新用户安装所有内置技能
+            installSkillsForUser(user.getId());
         } catch (Exception e) {
             System.out.println("User already exists or error: " + username);
+        }
+    }
+
+    /**
+     * 为用户安装所有内置技能
+     */
+    private void installSkillsForUser(Long userId) {
+        try {
+            List<Skill> builtInSkills = skillMapper.selectBuiltIn();
+            for (Skill skill : builtInSkills) {
+                UserSkill userSkill = userSkillMapper.selectByUserIdAndSkillId(userId, skill.getId());
+                if (userSkill == null) {
+                    userSkill = new UserSkill();
+                    userSkill.setUserId(userId);
+                    userSkill.setSkillId(skill.getId());
+                    userSkill.setIsInstalled(1);
+                    userSkill.setInstalledAt(java.time.LocalDateTime.now());
+                    userSkillMapper.insert(userSkill);
+                    System.out.println("  Installed skill: " + skill.getName() + " for user " + userId);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to install skills for user " + userId + ": " + e.getMessage());
         }
     }
 

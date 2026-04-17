@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Layout, Menu, Badge, Dropdown, Avatar } from 'antd';
 import { 
+  RobotOutlined,
   DashboardOutlined, 
   AppstoreOutlined, 
   CheckSquareOutlined, 
@@ -8,7 +9,9 @@ import {
   BellOutlined,
   UserOutlined,
   LogoutOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  ToolOutlined,
+  ApiOutlined
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
@@ -29,7 +32,10 @@ export default function MainLayout() {
   }, [user]);
 
   const menuItems = [
-    { key: '/dashboard', icon: <DashboardOutlined />, label: '首页' },
+    { key: '/agent', icon: <RobotOutlined />, label: 'AI助手' },
+    { key: '/skills', icon: <ToolOutlined />, label: '技能市场' },
+    { key: '/mcp', icon: <ApiOutlined />, label: 'MCP服务' },
+    { key: '/dashboard', icon: <DashboardOutlined />, label: '驾驶舱' },
     ...(hasRole('admin') ? [
       { key: '/systems', icon: <AppstoreOutlined />, label: '考核体系管理' },
       { key: '/monitorings', icon: <CheckSquareOutlined />, label: '月度监测' },

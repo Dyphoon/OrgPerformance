@@ -5,6 +5,9 @@ import zhCN from 'antd/locale/zh_CN';
 import { AuthProvider, useAuth } from './store/AuthContext';
 import MainLayout from './components/MainLayout';
 import LoginPage from './pages/LoginPage';
+import AgentPage from './pages/AgentPage';
+import SkillPage from './pages/SkillPage';
+import McpPage from './pages/McpPage';
 import DashboardPage from './pages/DashboardPage';
 import SystemListPage from './pages/SystemListPage';
 import MonitoringListPage from './pages/MonitoringListPage';
@@ -32,7 +35,10 @@ function AppRoutes() {
           <MainLayout />
         </ProtectedRoute>
       }>
-        <Route index element={<DashboardPage />} />
+        <Route index element={<AgentPage />} />
+        <Route path="agent" element={<AgentPage />} />
+        <Route path="skills" element={<SkillPage />} />
+        <Route path="mcp" element={<McpPage />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="systems" element={<SystemListPage />} />
         <Route path="monitorings" element={<MonitoringListPage />} />

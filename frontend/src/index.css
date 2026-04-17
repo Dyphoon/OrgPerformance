@@ -109,3 +109,12 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.agent-thinking-collapse .ant-collapse-header {
+  text-align: left !important;
+  padding-left: 0 !important;
+}
+
+.agent-thinking-collapse .ant-collapse-header-text {
+  text-align: left !important;
+}

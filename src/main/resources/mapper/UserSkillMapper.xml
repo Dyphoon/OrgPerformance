@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmbchina.orgperformance.mapper.UserSkillMapper">
+
+    <select id="selectByUserIdAndSkillId" resultType="com.cmbchina.orgperformance.entity.UserSkill">
+        SELECT * FROM user_skill WHERE user_id = #{userId} AND skill_id = #{skillId}
+    </select>
+
+    <select id="selectByUserId" resultType="com.cmbchina.orgperformance.entity.UserSkill">
+        SELECT * FROM user_skill WHERE user_id = #{userId} ORDER BY installed_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.cmbchina.orgperformance.entity.UserSkill">
+        INSERT INTO user_skill (user_id, skill_id, is_installed, installed_at)
+        VALUES (#{userId}, #{skillId}, #{isInstalled}, #{installedAt})
+    </insert>
+
+    <update id="update" parameterType="com.cmbchina.orgperformance.entity.UserSkill">
+        UPDATE user_skill SET is_installed=#{isInstalled}, installed_at=#{installedAt} 
+        WHERE user_id=#{userId} AND skill_id=#{skillId}
+    </update>
+
+    <delete id="deleteByUserIdAndSkillId">
+        DELETE FROM user_skill WHERE user_id = #{userId} AND skill_id = #{skillId}
+    </delete>
+
+</mapper>
