@@ -129,7 +129,27 @@ public class MinioService {
             );
             return destObject;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copy file", e);
+            System.err.println("MinIO copy failed, trying download-upload approach: " + e.getMessage());
+            try {
+                InputStream is = downloadFile(sourceBucket, sourceObject);
+                byte[] bytes = is.readAllBytes();
+                is.close();
+                
+                ensureBucketExists(destBucket);
+                
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket(destBucket)
+                                .object(destObject)
+                                .stream(new java.io.ByteArrayInputStream(bytes), bytes.length, -1)
+                                .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                                .build()
+                );
+                System.out.println("File copied via download-upload approach successfully");
+                return destObject;
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to copy file: " + ex.getMessage(), ex);
+            }
         }
     }
 

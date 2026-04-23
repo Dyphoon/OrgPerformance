@@ -15,6 +15,9 @@ interface FileUploadResponse {
   fileSize: number;
   contentLength: number;
   contentPreview: string;
+  templateFileKey?: string;
+  isTemplate?: boolean;
+  templateValid?: boolean;
   error?: string;
 }
 

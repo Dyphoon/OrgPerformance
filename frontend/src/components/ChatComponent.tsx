@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Button, Input, Avatar, Spin, Card, Collapse, Upload, Tag, message, Badge, Select, Space } from 'antd';
+import { Button, Input, Avatar, Spin, Card, Collapse, Upload, Tag, message, Badge, Select } from 'antd';
 import { SendOutlined, RobotOutlined, UserOutlined, ClearOutlined, BulbOutlined, PaperClipOutlined, FileOutlined, FileWordOutlined, FileExcelOutlined, FilePptOutlined, DeleteOutlined, StopOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -126,6 +126,9 @@ export default function ChatComponent() {
           contentLength: result.contentLength,
           contentPreview: result.contentPreview,
           uploadedAt: Date.now(),
+          templateFileKey: result.templateFileKey,
+          isTemplate: result.isTemplate,
+          templateValid: result.templateValid,
         }]);
       } else {
         message.error(result.error || '上传失败');
